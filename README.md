@@ -1,9 +1,16 @@
-# INFO
-This part is using **wscat**
-
 # HOW TO USE
+You can use this manipulation checker on [this website]().
+Just start the website and it will automatically start checking the BTC futures market.
+Script is sending info about each block of trades (75 trades).
 
-**Every placed trade on specific coin**
+# INFO
+1. Make sure you have [node.js](https://nodejs.org/en) installed.
+2.  Install this [wscat](https://www.npmjs.com/package/wscat) package or use following command:
+    ```bash
+    npm install -g wscat 
+    ```
+
+**Every newly placed trade on selected coin**
 ```bash
 wscat -c wss://stream.binance.com:9443/ws/btcusdt@trade
 ```
