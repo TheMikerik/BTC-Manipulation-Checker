@@ -2,171 +2,203 @@
 /* Web Socket */
 
 var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+
+const _MANIP_LOG_MAX = 11;
+const _BLOCK_SIZE = 10;
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
 /* Elements & Variables */
+class Elements{
+    constructor(){
+        this.huge_trades = document.getElementById('catchedTradeCounter');
+        this.manipulationLog = document.getElementById('manipulation_text');
+        this.trade_IDer = document.getElementById('allTradeCounter');
+        this.biggest_trade = document.getElementById('biggestTrade');
+        this.tradeLog = document.getElementById('tradeDiv');
+        this.trades = document.getElementById('tradeDiv');
+    }
 
-var catchedTradesCounter = document.getElementById('catchedTradeCounter');
-var manipulationLog = document.getElementById('manipulation_text');
-var trade_IDer = document.getElementById('trade_IDer');
-var biggestTrade = document.getElementById('biggestTrade');
-var tradeLog = document.getElementById('tradeDiv');
-var trades = document.getElementById('tradeDiv');
+    ChangeBiggestTrade(new_biggest){
+        this.biggest_trade.textContent = "Biggest opened: " + new_biggest + "₿";
+    }
+    ChangeProcessedTrades(){
+        this.huge_trades.textContent = "Huge trades: " + huge_trades;
+    }
+}
 
-var manip_log_objects = [];
-var manipulation_entities = [];
+var elements = new Elements();
+var manip_log = [];
+var trades_in_block = [];
 var tradeLogEntries = [];
 
-var manipulation_percentage = 1;
-var catchedTradeCount = 0;
-var biggestTradeFloat = 0;
+var manipulation = 1;
+var huge_trades = 0;
+var biggest_trade = 0;
 var max_trade_logs = 10;
 var similar_trades = 0;
 var trade_ID = 0;
 var block_id = 0;
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-/* Constants */
-
-const _MANIP_MAX_LOG = 11;
-const _BLOCK_SIZE = 100;
+var new_block = false;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
 /* Classes */
-
 class Block{
-    constructor(id, similar, manipPerc){
+    constructor(id, similar, manip_percentage){
         this.id = id;
         this.similarTr = similar;
-        this.manipPerc = manipPerc;
+        this.manip_percentage = manip_percentage;
 
-        this.logger = this.manipPerc + "% - Block " + this.id
-                    + " has " + this.similarTr + "/"
-                    + _BLOCK_SIZE + " potential manipulation attempts.";
+        this.message = this.manip_percentage + 
+                    "% - Block " +
+                    this.id +
+                    " has " +
+                    this.similarTr +
+                    "/" + 
+                    _BLOCK_SIZE +
+                    " potential manipulation attempts.";
     }
 }
 
 class Socket{
     constructor(socket_stream){
         this.message = socket_stream;
-        this.volume = parseFloat(this.messages.q).toFixed(5);
-        this.curPrice = parseFloat(messages.p).toFixed(2);
+        this.volume = parseFloat(this.message.q).toFixed(5);
+        this.price = parseFloat(this.message.p).toFixed(2);
+    }
+
+    CheckIfBiggest(volume, price){
+        if (volume > biggest_trade) {
+            biggest_trade = volume;
+            elements.ChangeBiggestTrade(biggest_trade);
+        }
+        if (this.volume > 0.005) {
+            CreateHugeTradeLog(volume, price, trade_ID);
+            PrintHugeTrades();
+            elements.ChangeProcessedTrades(huge_trades++);
+        }
+    }
+
+    AddIntoBlock(volume){
+        if (trades_in_block.length >= _BLOCK_SIZE){
+            trades_in_block.shift();
+        }
+        trades_in_block.push(volume);
     }
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
 /* Functions */
 
-function HugeTradeLog(vol, curPrice, trade_id){
-    return vol + "BTC opened at " + curPrice + " ID: " + trade_id;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
-/* Socket */
-
-binanceSocket.onmessage = function(out) {
-    var socket = new Socket(JSON.parse(out.data));
-    var messages = JSON.parse(out.data);
-    var volume = parseFloat(messages.q).toFixed(5);
-    var curPrice = parseFloat(messages.p).toFixed(2);
-
-    if (volume > biggestTradeFloat) {
-        biggestTradeFloat = volume;
-        biggestTrade.textContent = "Biggest opened: " + biggestTradeFloat + "btc";
-    }
-    if (volume > 0.005) {
-        if (tradeLogEntries.length >= max_trade_logs) {
+function CreateHugeTradeLog(vol, price, trade_id){
+    if (tradeLogEntries.length >= max_trade_logs) {
         tradeLogEntries.shift();
-        }
-        var tradeEntry = HugeTradeLog(volume, curPrice, trade_ID);
-        tradeLogEntries.push(tradeEntry);
+    }
+    tradeLogEntries.push(vol + "₿ opened at " + price + " ID: " + trade_id);
+    tradeLog.innerHTML = "<br>";
+}
 
-        tradeLog.innerHTML = "<br>";
-
-        for (var i = tradeLogEntries.length - 1; i >= 0; i--) {
+function PrintHugeTrades(){
+    for (var i = tradeLogEntries.length - 1; i >= 0; i--) {
         var tradeLogEntry = tradeLogEntries[i];
         var tradeLogItem = document.createElement("div");
         tradeLogItem.textContent = tradeLogEntry;
         tradeLog.prepend(tradeLogItem);
-        }
-
-        catchedTradeCount++;
-        catchedTradesCounter.textContent = "Catched trades: " + catchedTradeCount;
     }
+}
 
-    /* Manipulation calculus */
-
-    if (manipulation_entities.length >= _BLOCK_SIZE){
-        manipulation_entities.shift();
-    }
-    manipulation_entities.push(volume);
-    
-    if (trade_ID === 0){
-    }
-    else if (trade_ID % _BLOCK_SIZE === 0){
-        for (var i=0; i<(manipulation_entities.length - 1); i++){
-            if (volume === manipulation_entities[i]){
-                similar_trades++;
-            }
-        }
-        if (similar_trades !== 0){
+function CalculateManipulation(volume){
+    for (var i=0; i<(trades_in_block.length - 1); i++){
+        if (volume === trades_in_block[i]){
             similar_trades++;
         }
+    }
+    if (similar_trades !== 0){
+        similar_trades++;
+    }
 
-        var similar_trades_in_block = similar_trades/_BLOCK_SIZE;
-        manipulation_percentage = parseFloat((similar_trades_in_block)*100).toFixed(2);
+    var result = similar_trades/_BLOCK_SIZE;
+    manipulation = parseFloat((result)*100).toFixed(2);
+}
 
-        var block = new Block(block_id, similar_trades, manipulation_percentage);
+function CreateBlock(){
+    var block = new Block(block_id, similar_trades, manipulation);
 
-        if(manip_log_objects
-        .length >= _MANIP_MAX_LOG){
-            manip_log_objects
-        .shift();
+    if(manip_log.length >= _MANIP_LOG_MAX){
+        manip_log.shift();
+    }
+    
+    manip_log.push(block);
+
+    manipulationLog.innerHTML = "<br>";
+}
+
+function InsertNewElement(msg, cat){
+    var importance;
+    var highlight;
+
+    var manip_log_item = document.createElement("div");
+
+    switch (cat) {
+        case 1:
+            importance = " Negligible similarity.";
+            highlight = "highlight_low";
+            break;
+        case 2:
+            importance = " Suspicious.";
+            highlight = "highlight_mid";
+            break;
+        case 3:
+            importance = " Manipulation alert!";
+            highlight = "highlight_high";
+            break;
+        default:
+            break;
+    }
+
+    var new_elem = document.createElement("span");
+    new_elem.textContent = msg + importance;
+    new_elem.classList.add(highlight);
+    manip_log_item.appendChild(new_elem);
+
+
+    manipulationLog.prepend(manip_log_item);
+}
+
+function GetCategory(input_perc) {
+    if (input_perc > 45.00) {
+        return 3;
+    } else if (input_perc > 10.00) {
+        return 2;
+    } else if (input_perc > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+
+binanceSocket.onmessage = function(out) {
+    var socket = new Socket(JSON.parse(out.data));
+    var volume = socket.volume;
+    var price = socket.price;
+
+    socket.CheckIfBiggest(volume, price);
+    socket.AddIntoBlock(volume);
+
+
+    new_block = trade_ID % _BLOCK_SIZE === 0 ? true : false;
+
+    if (new_block){
+        CalculateManipulation(volume);
+        CreateBlock();
+
+        for (var i=manip_log.length-1; i>=0; i--){
+            var category = GetCategory(manip_log[i].manip_percentage);
+            var manip_message = manip_log[i].message;
+
+            InsertNewElement(manip_message, category);
         }
-        
-        manip_log_objects
-    .push(block);
-
-        manipulationLog.innerHTML = "<br>";
-
-        for (var i=manip_log_objects
-        .length-1; i>=0; i--){
-            var manipulationLogEntry = manip_log_objects
-        [i].logger;
-            var manipulationLogItem = document.createElement("div");
-
-            if ( manip_log_objects
-            [i].manipPerc > 0 && manip_log_objects
-            [i].manipPerc <= 10.00 ){
-                var highligh_low_prob = document.createElement("span");
-                highligh_low_prob.textContent = manipulationLogEntry + " Negligible similarity.";
-                highligh_low_prob.classList.add("highlight_low");
-                manipulationLogItem.appendChild(highligh_low_prob);
-            }
-            else if ( manip_log_objects
-            [i].manipPerc > 10.00 && manip_log_objects
-            [i].manipPerc <= 45.00 ){
-                var highligh_mid_prob = document.createElement("span");
-                highligh_mid_prob.textContent = manipulationLogEntry + " Suspicious.";
-                highligh_mid_prob.classList.add("highlight_mid");
-                manipulationLogItem.appendChild(highligh_mid_prob);
-            }
-            else if ( manip_log_objects
-            [i].manipPerc > 45.00 ){
-                var highligh_high_prob = document.createElement("span");
-                highligh_high_prob.textContent = manipulationLogEntry + " Manipulation alert!";
-                highligh_high_prob.classList.add("highlight_high");
-                manipulationLogItem.appendChild(highligh_high_prob);
-            }
-            else {
-                manipulationLogItem.textContent = manipulationLogEntry;
-            }
-            manipulationLog.prepend(manipulationLogItem);
-        }
-
-
         block_id++;
         similar_trades=0;
     }
-
-
-
-
     trade_ID++;
     trade_IDer.textContent = "Recived trades: " + trade_ID;
 };

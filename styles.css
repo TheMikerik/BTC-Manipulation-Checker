@@ -12,9 +12,9 @@ h1 {
     color: #698C7A;
     font-size: 45px;
 }
-
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* InfoBar */
+
 .infoBar{
     position: fixed;
     height: 400px;
@@ -36,9 +36,9 @@ h1 {
 .infoBar h3{
     margin-top: -20px;
 }
-
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* VolumeChart */
+
 .VolumeChart{
     position: fixed;
     height: 400px;
@@ -64,9 +64,9 @@ h1 {
     position: absolute;
     display: block;
 }
-
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* Manipulation */
+
 .manipulation .manipulation_chance {
     position: fixed;
     height: 320px;
