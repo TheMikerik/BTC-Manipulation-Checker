@@ -12,6 +12,24 @@ h1 {
     color: #698C7A;
     font-size: 45px;
 }
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* InfoBar */
+.infoBar{
+    position: fixed;
+    height: 400px;
+    width: 46%;
+    top: 510px;
+    left: 1%;
+    font-size: 20px;
+    border: 5px solid #698C7A;
+    background-color: #E8EDDF;
+    border-radius: 25px;
+    padding: 15px;
+    overflow: hidden;
+    display: block;
+}
+
 .infoBar h2{
     margin-top: 15px;
 }
@@ -19,6 +37,8 @@ h1 {
     margin-top: -20px;
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* VolumeChart */
 .VolumeChart{
     position: fixed;
     height: 400px;
@@ -45,22 +65,8 @@ h1 {
     display: block;
 }
 
-
-.infoBar{
-    position: fixed;
-    height: 400px;
-    width: 46%;
-    top: 510px;
-    left: 1%;
-    font-size: 20px;
-    border: 5px solid #698C7A;
-    background-color: #E8EDDF;
-    border-radius: 25px;
-    padding: 15px;
-    overflow: hidden;
-    display: block;
-}
-
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* Manipulation */
 .manipulation .manipulation_chance {
     position: fixed;
     height: 320px;
@@ -84,3 +90,4 @@ h1 {
 .manipulation .highlight_high{
     color: rgb(255, 0, 0);
 }
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

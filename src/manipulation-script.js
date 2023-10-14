@@ -1,30 +1,35 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Web Socket */
+
 var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Elements & Variables */
+
+var catchedTradesCounter = document.getElementById('catchedTradeCounter');
+var manipulationLog = document.getElementById('manipulation_text');
+var trade_IDer = document.getElementById('trade_IDer');
+var biggestTrade = document.getElementById('biggestTrade');
+var tradeLog = document.getElementById('tradeDiv');
 var trades = document.getElementById('tradeDiv');
 
-/* Catcher part */
-var allTradeCounter = document.getElementById('allTradeCounter');
-var allTradeCount = 0;
-var catchedTradesCounter = document.getElementById('catchedTradeCounter');
-var catchedTradeCount = 0;
-var biggestTrade = document.getElementById('biggestTrade');
-var biggestTradeFloat = 0;
-var curretnPrice = document.getElementById('currentPrice');
-var curPrice = 0;
-var tradeLog = document.getElementById('tradeDiv');
-var max_trade_logs = 10;
+var manip_log_objects = [];
+var manipulation_entities = [];
 var tradeLogEntries = [];
 
-/* Manipulation part */
-var manipulation_HTML = document.getElementById('manipulation_chance');
-var manipulation_entities = [];
-var similar_trades = 0;
-var block_id = 0;
 var manipulation_percentage = 1;
-var manipulationLogEntries = [];
-var manipulationLog = document.getElementById('manipulation_text');
+var catchedTradeCount = 0;
+var biggestTradeFloat = 0;
+var max_trade_logs = 10;
+var similar_trades = 0;
+var trade_ID = 0;
+var block_id = 0;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Constants */
 
-const max_manip_log = 11;
-const block_size = 75;
+const _MANIP_MAX_LOG = 11;
+const _BLOCK_SIZE = 100;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Classes */
 
 class Block{
     constructor(id, similar, manipPerc){
@@ -34,26 +39,41 @@ class Block{
 
         this.logger = this.manipPerc + "% - Block " + this.id
                     + " has " + this.similarTr + "/"
-                    + block_size + " potential manipulation attempts.";
+                    + _BLOCK_SIZE + " potential manipulation attempts.";
     }
 }
 
+class Socket{
+    constructor(socket_stream){
+        this.message = socket_stream;
+        this.volume = parseFloat(this.messages.q).toFixed(5);
+        this.curPrice = parseFloat(messages.p).toFixed(2);
+    }
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Functions */
+
+function HugeTradeLog(vol, curPrice, trade_id){
+    return vol + "BTC opened at " + curPrice + " ID: " + trade_id;
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>
+/* Socket */
+
 binanceSocket.onmessage = function(out) {
+    var socket = new Socket(JSON.parse(out.data));
     var messages = JSON.parse(out.data);
-    var volume = parseFloat(messages.q);
+    var volume = parseFloat(messages.q).toFixed(5);
     var curPrice = parseFloat(messages.p).toFixed(2);
 
     if (volume > biggestTradeFloat) {
         biggestTradeFloat = volume;
         biggestTrade.textContent = "Biggest opened: " + biggestTradeFloat + "btc";
     }
-    if (volume > 0.5) {
+    if (volume > 0.005) {
         if (tradeLogEntries.length >= max_trade_logs) {
         tradeLogEntries.shift();
         }
-        var tradeEntry = messages.q
-                         + " BTC trade has been opened on the price of "
-                         + curPrice + "$ with unique ID: " + allTradeCount;
+        var tradeEntry = HugeTradeLog(volume, curPrice, trade_ID);
         tradeLogEntries.push(tradeEntry);
 
         tradeLog.innerHTML = "<br>";
@@ -69,16 +89,16 @@ binanceSocket.onmessage = function(out) {
         catchedTradesCounter.textContent = "Catched trades: " + catchedTradeCount;
     }
 
-
     /* Manipulation calculus */
-    if (manipulation_entities.length >= block_size){
+
+    if (manipulation_entities.length >= _BLOCK_SIZE){
         manipulation_entities.shift();
     }
     manipulation_entities.push(volume);
     
-    if (allTradeCount === 0){
+    if (trade_ID === 0){
     }
-    else if (allTradeCount % block_size === 0){
+    else if (trade_ID % _BLOCK_SIZE === 0){
         for (var i=0; i<(manipulation_entities.length - 1); i++){
             if (volume === manipulation_entities[i]){
                 similar_trades++;
@@ -88,36 +108,46 @@ binanceSocket.onmessage = function(out) {
             similar_trades++;
         }
 
-        var similar_trades_in_block = similar_trades/block_size;
+        var similar_trades_in_block = similar_trades/_BLOCK_SIZE;
         manipulation_percentage = parseFloat((similar_trades_in_block)*100).toFixed(2);
 
         var block = new Block(block_id, similar_trades, manipulation_percentage);
 
-        if(manipulationLogEntries.length >= max_manip_log){
-            manipulationLogEntries.shift();
+        if(manip_log_objects
+        .length >= _MANIP_MAX_LOG){
+            manip_log_objects
+        .shift();
         }
         
-        manipulationLogEntries.push(block);
+        manip_log_objects
+    .push(block);
 
         manipulationLog.innerHTML = "<br>";
 
-        for (var i=manipulationLogEntries.length-1; i>=0; i--){
-            var manipulationLogEntry = manipulationLogEntries[i].logger;
+        for (var i=manip_log_objects
+        .length-1; i>=0; i--){
+            var manipulationLogEntry = manip_log_objects
+        [i].logger;
             var manipulationLogItem = document.createElement("div");
 
-            if ( manipulationLogEntries[i].manipPerc > 0 && manipulationLogEntries[i].manipPerc <= 10.00 ){
+            if ( manip_log_objects
+            [i].manipPerc > 0 && manip_log_objects
+            [i].manipPerc <= 10.00 ){
                 var highligh_low_prob = document.createElement("span");
                 highligh_low_prob.textContent = manipulationLogEntry + " Negligible similarity.";
                 highligh_low_prob.classList.add("highlight_low");
                 manipulationLogItem.appendChild(highligh_low_prob);
             }
-            else if ( manipulationLogEntries[i].manipPerc > 10.00 && manipulationLogEntries[i].manipPerc <= 45.00 ){
+            else if ( manip_log_objects
+            [i].manipPerc > 10.00 && manip_log_objects
+            [i].manipPerc <= 45.00 ){
                 var highligh_mid_prob = document.createElement("span");
                 highligh_mid_prob.textContent = manipulationLogEntry + " Suspicious.";
                 highligh_mid_prob.classList.add("highlight_mid");
                 manipulationLogItem.appendChild(highligh_mid_prob);
             }
-            else if ( manipulationLogEntries[i].manipPerc > 45.00 ){
+            else if ( manip_log_objects
+            [i].manipPerc > 45.00 ){
                 var highligh_high_prob = document.createElement("span");
                 highligh_high_prob.textContent = manipulationLogEntry + " Manipulation alert!";
                 highligh_high_prob.classList.add("highlight_high");
@@ -137,6 +167,6 @@ binanceSocket.onmessage = function(out) {
 
 
 
-    allTradeCount++;
-    allTradeCounter.textContent = "Recived trades: " + allTradeCount;
+    trade_ID++;
+    trade_IDer.textContent = "Recived trades: " + trade_ID;
 };
