@@ -7,7 +7,7 @@ This JavaScript code is designed for real-time trade manipulation detection. It 
 Check it out live on [this website](https://themikerik.github.io/futuresChecker/).
 
 ## To Do List
-- [ ] Make block visualizer as on blockchain explorer
+- [ ] Make block visualizer as on mempool
 - [ ] Fix graph bug
 - [ ] Make shorter block output
 - [ ] Squeeze block output next to graph
