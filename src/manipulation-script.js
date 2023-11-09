@@ -71,14 +71,17 @@ class Block{
         this.similarity = similar;
         this.manip_percentage = manip_percentage;
 
-        this.message = this.manip_percentage + 
-                    "% - Block " +
-                    this.id +
-                    " has " +
-                    this.similarity +
-                    "/" + 
-                    _BLOCK_SIZE +
-                    " potential manipulation attempts.";
+        // this.message = this.manip_percentage + 
+        //             "% - Block " +
+        //             this.id +
+        //             " has " +
+        //             this.similarity +
+        //             "/" + 
+        //             _BLOCK_SIZE +
+        //             " potential manipulation attempts.";
+
+        this.message = "Block " + this.id + ": " + this.manip_percentage +
+                        "% (" + this.similarity + "/" + _BLOCK_SIZE + ") ";
     }
 }
 
