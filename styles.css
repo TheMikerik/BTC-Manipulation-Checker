@@ -1,93 +1,239 @@
 /* https://coolors.co/palette/cfdbd5-e8eddf-f5cb5c-698C7A-333533 */
 
+@media (max-width: 768px) {
+    .trading-data {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .price-item {
+        width: 80%;
+        max-width: none;
+    }
+}
+
+:root {
+    --bg-color: #000000;
+
+    --primary: #2fd98a;
+    --on-primary: #061910;
+
+    --primary-container: #191919;
+    --primary-border: rgba(173, 173, 173, 0.3);
+    --on-primary-container: #d9d9d9;
+
+    --secondary: #9780ff;
+
+    --secondary-container: #464646;
+    --on-secondary-container: #f7f7f7;
+
+    --border-radius: 25px;
+    --padding: 25px;
+}
+
+
+/* Global Styles */
 body {
-    background-color: #333533;
-    font-family: 'Dosis', sans-serif;
-    color: #242423
-}
-h1 {
-    position: fixed;
-    left: 50%;
-    transform: translate(-50%);
-    color: #698C7A;
-    font-size: 45px;
-}
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-/* InfoBar */
-
-.infoBar{
-    position: fixed;
-    height: 400px;
-    width: 46%;
-    top: 510px;
-    left: 1%;
-    font-size: 20px;
-    border: 5px solid #698C7A;
-    background-color: #E8EDDF;
-    border-radius: 25px;
-    padding: 15px;
-    overflow: hidden;
-    display: block;
-}
-
-.infoBar h2{
-    margin-top: 15px;
-}
-.infoBar h3{
-    margin-top: -20px;
-}
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-/* VolumeChart */
-
-.VolumeChart{
-    position: fixed;
-    height: 400px;
-    width: 46%;
-    top: 510px;
-    right: 1%;
-    font-size: 20px;
-    border: 5px solid #698C7A;
-    background-color: #E8EDDF;
-    border-radius: 25px;
-    padding: 15px;
-    overflow: hidden;
-    display: block;
-}
-.VolumeChart .price{
-    position: absolute;
-    font-size: 30px;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    font-family: 'Roboto', sans-serif;
     color: #242423;
-    z-index: 5;
-    display: block;
 }
-.VolumeChart .chart{
-    position: absolute;
-    display: block;
-}
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-/* Manipulation */
 
-.manipulation .manipulation_chance {
-    position: fixed;
-    height: 320px;
-    width: 46%;
-    top: 120px;
-    right: 1%;
-    font-size: 20px;
-    border: 5px solid #698C7A;
-    background-color: #E8EDDF;
-    border-radius: 25px;
-    padding: 15px;
-    overflow: hidden;
-    display: block;
+/* Header */
+.header-wrapper {
+    margin: 25px;
+    background-color: var(--primary-container);
+    border-radius: var(--border-radius);
+    padding: var(--padding);
+    text-align: center;
+    border: 2px solid var(--primary-border);
 }
-.manipulation .highlight_low{
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 50px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #e0e0e0;
+}
+
+header h1 {
+    margin: 0;
+    color: var(--on-primary-container);
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+.card-wrapper {
+    margin: 25px;
+    background-color: var(--primary-container);
+    border-radius: var(--border-radius);
+    padding: var(--padding);
+    text-align: center;
+    border: 2px solid var(--primary-border);
+}
+
+/* Trading Data Display */
+.trading-data {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.price-item {
+    background-color: var(--primary-container);
+    border: 2px solid var(--primary-border);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    width: 45%;
+    max-width: 200px;
+    margin: 10px 0;
+    box-sizing: border-box;
+}
+
+.price-item h3 {
+    margin-bottom: 10px;
+    color: var(--on-primary-container);
+    font-size: 1.2em;
+}
+
+.price-item p {
+    margin: 0;
+    font-size: 1.5em;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Chart Row */
+.chart {
+    width: 100%;
+    height: 100%;
+}
+
+.chart-card {
+    flex: 1 1 100%;
+    background-color: var(--secondary-container);
+    border: 5px solid #698C7A;
+    border-radius: 15px;
+    padding: 5px;
+    box-sizing: border-box;
+    height: 400px;
+    width: 100%;
+}
+
+/* Info & Manipulation Row */
+.info-manipulation-row {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* InfoBar */
+.infoBar {
+    flex: 1 1 45%;
+    background-color: #E8EDDF;
+    border: 5px solid #698C7A;
+    border-radius: 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.infoBar h2 {
+    margin-top: 0;
+    color: #333533;
+}
+
+.infoBar h3 {
+    margin: 10px 0;
+    color: #242423;
+}
+
+.trade-log {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 1px solid #698C7A;
+    padding-top: 10px;
+}
+
+/* Manipulation Checker */
+.manipulation {
+    flex: 1 1 45%;
+    background-color: #E8EDDF;
+    border: 5px solid #698C7A;
+    border-radius: 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.manipulation_chance h3 {
+    margin-top: 0;
+    color: #333533;
+}
+
+#manipulation_text {
+    margin-top: 10px;
+    color: #242423;
+}
+
+/* Highlighting Manipulation Categories */
+.highlight_low {
     color: rgb(10, 140, 30);
 }
-.manipulation .highlight_mid{
+
+.highlight_mid {
     color: rgb(20, 20, 200);
 }
-.manipulation .highlight_high{
+
+.highlight_high {
     color: rgb(255, 0, 0);
 }
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+/* Footer */
+footer {
+    background-color: #698C7A;
+    padding: 10px 0;
+    text-align: center;
+    color: #E8EDDF;
+    font-size: 0.9em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .info-manipulation-row {
+        flex-direction: column;
+    }
+
+    .infoBar,
+    .manipulation {
+        flex: 1 1 100%;
+    }
+}

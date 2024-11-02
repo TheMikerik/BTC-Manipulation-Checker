@@ -1,6 +1,17 @@
 const _MANIP_LOG_MAX = 11;
 const _BLOCK_SIZE = 100;
 
+import { TradingData } from './trading-data.js';
+
+const tradingData = new TradingData("btcusdt", "1s"); // Use a valid interval like "1m"
+tradingData.setKlineCloseCallback((data) => {
+    document.getElementById('openPrice').textContent = data.openPrice;
+    document.getElementById('closePrice').textContent = data.closePrice;
+    document.getElementById('highPrice').textContent = data.highPrice;
+    document.getElementById('lowPrice').textContent = data.lowPrice;
+    // Update your chart here as needed
+});
+tradingData.start();
 
 var BINANCE_SOCKET = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 /* Output of this web socket is following:
