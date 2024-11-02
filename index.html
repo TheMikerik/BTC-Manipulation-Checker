@@ -6,78 +6,112 @@
     <title>BTCClarity</title>
     <link rel="icon" href="images/icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-t8iYbXgIhFF++iJgziUdnpD5zDzoBuOrwn6G2umLQwqmJW0BK0XSedVJrsswRH7W/2FcVc/3aFVow0AJf8XJ4g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header-wrapper">
-        <header>
-            <h1 class="bright">CryptoSpec</h1>
-            <nav>
-                <ul>
-                    <li><a href="">Features</a></li>
-                    <li><a href="">How It Works</a></li>
-                    <li><a href="">Testimonials</a></li>
-                    <li><a href="">Download</a></li>
-                </ul>
-            </nav>
-        </header>
-    </div>
-
-    <main>
-        <!-- First Row: Chart -->
-        <div class="card-wrapper">
-            <section class="trading-data">
-                <div class="price-item">
-                    <h3>Opening Price</h3>
-                    <p id="openPrice">-</p>
-                </div>
-                <div class="price-item">
-                    <h3>Closing Price</h3>
-                    <p id="closePrice">-</p>
-                </div>
-                <div class="price-item">
-                    <h3>High Price</h3>
-                    <p id="highPrice">-</p>
-                </div>
-                <div class="price-item">
-                    <h3>Low Price</h3>
-                    <p id="lowPrice">-</p>
-                </div>
-            </section>
-            <section class="chart-card" id="volumeChart">
-                <div class="chart" id="chart"></div>
-            </section>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">BTCClarity</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#download">Download</a></li>
+            </ul>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </div>
+    </nav>
 
-        <!-- Second Row: InfoBar and Manipulation -->
-        <section class="row info-manipulation-row">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Welcome to BTCClarity</h1>
+            <p>Monitor and analyze Bitcoin manipulation in real-time.</p>
+            <a href="#dashboard" class="btn">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <main class="dashboard" id="dashboard">
+        <!-- Trading Data -->
+        <section class="trading-data">
+            <div class="card">
+                <h3>Opening Price</h3>
+                <p id="openPrice">-</p>
+            </div>
+            <div class="card">
+                <h3>Closing Price</h3>
+                <p id="closePrice">-</p>
+            </div>
+            <div class="card">
+                <h3>High Price</h3>
+                <p id="highPrice">-</p>
+            </div>
+            <div class="card">
+                <h3>Low Price</h3>
+                <p id="lowPrice">-</p>
+            </div>
+        </section>
+
+        <!-- Volume Chart -->
+        <section class="chart-section">
+            <h2>Volume Chart</h2>
+            <div class="chart" id="chart"></div>
+        </section>
+
+        <!-- Information & Manipulation -->
+        <section class="info-manipulation">
             <!-- InfoBar -->
-            <div class="infoBar" id="infoBar">
+            <div class="infoBar">
                 <h2>Newly Opened Positions Over 0.5 BTC</h2>
-                <h3 id="allTradeCounter">Received Trades: 0</h3>
-                <h3 id="catchedTradeCounter">Huge Trades: 0</h3>
-                <h3 id="biggestTrade">Biggest Opened: 0 BTC</h3>
+                <div class="counters">
+                    <div>
+                        <h3>Received Trades</h3>
+                        <p id="allTradeCounter">0</p>
+                    </div>
+                    <div>
+                        <h3>Huge Trades</h3>
+                        <p id="catchedTradeCounter">0</p>
+                    </div>
+                    <div>
+                        <h3>Biggest Opened</h3>
+                        <p id="biggestTrade">0 BTC</p>
+                    </div>
+                </div>
                 <div id="tradeDiv" class="trade-log"></div>
             </div>
 
             <!-- Manipulation Checker -->
-            <div class="manipulation" id="manipulation">
-                <div id="manipulation_chance" class="manipulation_chance">
-                    <h3>Manipulation Attempts in Each Block:</h3>
-                    <div id="manipulation_text">Checking initial block...</div>
-                </div>
+            <div class="manipulation">
+                <h3>Manipulation Attempts in Each Block</h3>
+                <div id="manipulation_text">Checking initial block...</div>
             </div>
         </section>
     </main>
 
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2023 BTC Manipulation Checker. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2023 BTCClarity. All rights reserved.</p>
+            <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        </div>
     </footer>
 
-    <!-- Include your scripts as modules -->
+    <!-- Scripts -->
     <script type="module" src="src/manipulation-checker.js"></script>
     <script type="module" src="src/trading-data.js"></script>
     <script type="module" src="src/chart.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
